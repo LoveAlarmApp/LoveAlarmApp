@@ -1,70 +1,61 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, TextInput } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
-import LottieView from 'lottie-react-native';
-import { useNavigation } from '@react-navigation/native';
-import * as Permissions from 'expo-permissions';
-import * as Location from 'expo-location';
+import React, { useState, useEffect } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  TextInput,
+} from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
+import LottieView from "lottie-react-native";
+import { useNavigation } from "@react-navigation/native";
+import * as Permissions from "expo-permissions";
+import * as Location from "expo-location";
+import { apiRequest } from "./utils";
 
 const Home = () => {
   const navigation = useNavigation();
-  const [name, setName] = useState('');
-  const [description, setDescription] = useState('');
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
   const [location, setLocation] = useState(null);
   // const [status, requestPermission] = Location.useBackgroundPermissions();
 
   useEffect(() => {
-    requestLocationPermission();
+    getLocation();
   }, []);
-
-  const requestLocationPermission = async () => {
-    try {
-      const { status } = await Location.requestForegroundPermissionsAsync();
-  
-      if (status !== 'granted') {
-        console.error('Permission to access location was denied');
-      } else {
-        getLocation();
-      }
-    } catch (error) {
-      console.error('Error requesting location permission:', error);
-    }
-  };
-  
-
 
   const getLocation = async () => {
     try {
       let { status } = await Location.requestForegroundPermissionsAsync();
 
-      if (status !== 'granted') {
-        console.error('Permission to access location was denied');
+      if (status !== "granted") {
+        console.error("Permission to access location was denied");
         return;
       }
 
       let location = await Location.getCurrentPositionAsync({});
+      console.log("Got location", location);
       setLocation(location.coords);
 
       // Uncomment the following line if you want to get the location using the Google Geolocation API
       // getGoogleGeolocation(location.coords.latitude, location.coords.longitude);
     } catch (error) {
-      console.error('Error getting location:', error);
+      console.error("Error getting location:", error);
     }
   };
-
 
   const handleButtonPress = async () => {
     try {
       if (!location) {
-        console.error('Location data not available');
+        console.error("Location data not available");
         return;
       }
-      
+
       // Need to change --------------------------------------------------
-      const response = await fetch('http://206.12.45.58:3001/api/record', {
-        method: 'POST',
+      const response = await apiRequest("/api/record", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           name,
@@ -76,13 +67,13 @@ const Home = () => {
 
       // console.log(req);
       if (response.ok) {
-        console.log('User data saved successfully');
-        navigation.navigate('MatchingScreen', {name, description});
+        console.log("User data saved successfully");
+        navigation.navigate("MatchingScreen", { name, description });
       } else {
-        console.error('Failed to save user data');
+        console.error("Failed to save user data");
       }
     } catch (error) {
-      console.error('Error sending request:', error);
+      console.error("Error sending request:", error);
     }
   };
 
@@ -122,31 +113,32 @@ const Home = () => {
           <Text style={styles.buttonText}>Start Matching</Text>
         </TouchableOpacity>
       </View>
-    </LinearGradient> );
+    </LinearGradient>
+  );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   title: {
     fontSize: 30, // Adjusted font size
-    fontFamily: 'Gill Sans',
+    fontFamily: "Gill Sans",
     marginBottom: 20,
-    color: 'white',
+    color: "white",
   },
   button: {
-    backgroundColor: '#F87B92',
+    backgroundColor: "#F87B92",
     padding: 10,
     borderRadius: 5,
     marginTop: 20,
   },
   buttonText: {
-    fontWeight: 'bold',
-    fontFamily: 'Gill Sans',
-    color: 'white',
+    fontWeight: "bold",
+    fontFamily: "Gill Sans",
+    color: "white",
     fontSize: 18,
   },
   animation: {
@@ -154,18 +146,17 @@ const styles = StyleSheet.create({
     height: 250, // Adjusted animation size
   },
   input: {
-    fontFamily: 'Gill Sans',
+    fontFamily: "Gill Sans",
     height: 40,
-    borderColor: 'white',
+    borderColor: "white",
     borderWidth: 1,
     borderRadius: 5,
-    backgroundColor: 'rgba(255, 255, 255, 0.3)',
-    color: 'white',
+    backgroundColor: "rgba(255, 255, 255, 0.3)",
+    color: "white",
     paddingHorizontal: 10,
-    width: '80%',
+    width: "80%",
     marginTop: 10,
   },
 });
 
 export default Home;
-
