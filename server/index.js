@@ -114,7 +114,7 @@ app.post("/api/nearbyUsers", async (req, res) => {
             type: "Point",
             coordinates: [longitude, latitude],
           },
-          $maxDistance: 1000,
+          $maxDistance: 10,
         },
       },
     });

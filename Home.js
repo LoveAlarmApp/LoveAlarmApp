@@ -9,7 +9,6 @@ import {
 import { LinearGradient } from "expo-linear-gradient";
 import LottieView from "lottie-react-native";
 import { useNavigation } from "@react-navigation/native";
-import * as Permissions from "expo-permissions";
 import * as Location from "expo-location";
 import { apiRequest } from "./utils";
 
